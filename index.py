@@ -1,4 +1,4 @@
-# bot.py
+# index.py
 import discord
 import os
 import dotenv
@@ -18,12 +18,18 @@ async def send_message(message):
     await client.wait_until_ready()
     channel = client.get_channel(CHANNEL_ID)
     if channel:
+        print(f"Channel found: {channel.name}")  # Debugging line
         thread = None
         if THREAD_ID:
             thread = channel.get_thread(int(THREAD_ID))
+            print(f"Using existing thread: {thread}")  # Debugging line
         if not thread:
             thread = await channel.create_thread(name="GitHub Updates", auto_archive_duration=60)
+            print(f"Created new thread: {thread.name}")  # Debugging line
         await thread.send(message)
+        print(f"Message sent: {message}")  # Debugging line
+    else:
+        print(f"Channel not found: {CHANNEL_ID}")  # Debugging line
 
 async def handle(request):
     data = await request.json()
