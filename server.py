@@ -1,15 +1,10 @@
 # server.py
 from flask import Flask, request
 import json
-import requests
 import os
-import dotenv
-
-dotenv.load_dotenv()
+import requests
 
 app = Flask(__name__)
-
-DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_URL')
 
 @app.route('/github-webhook', methods=['POST'])
 def github_webhook():
@@ -21,14 +16,15 @@ def github_webhook():
     return 'OK', 200
 
 def send_discord_notification(message):
-    data = {
-        "content": message
-    }
+    url = 'http://localhost:8080/send-message'
     headers = {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
     }
-    response = requests.post(DISCORD_WEBHOOK_URL, data=json.dumps(data), headers=headers)
-    if response.status_code != 204:
+    payload = {
+        'message': message
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    if response.status_code != 200:
         raise Exception(f"Request failed: {response.status_code}, {response.text}")
 
 if __name__ == '__main__':
